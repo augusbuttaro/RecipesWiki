@@ -31,10 +31,10 @@ function Header({ onSearch }) {
             <button type='submit' className='bg-gray w-10 h-10'>O</button>
         </form>
         <div className='flex px-8'>
-            <div className='flex items-center gap-4 px-4 cursor-pointer text-white hover:bg-orange'>
+            <Link to='/favorites' className='flex items-center gap-4 px-4 cursor-pointer text-white hover:bg-orange'>
                 <img className='h-12' src={favsIcon} />
-                Favourite Recipies
-            </div>
+                Favourite Meals
+            </Link>
         </div>
     </div>
   )

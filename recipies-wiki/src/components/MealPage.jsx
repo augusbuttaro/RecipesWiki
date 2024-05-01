@@ -1,26 +1,70 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
+import { getDatabase,onValue, ref, set } from 'firebase/database';
 import { useParams } from 'react-router-dom';
 import useFetchData from '../hooks/useFetchData';
+import favsIcon from '../assets/favs-icon.png'
+import nonFavsIcon from '../assets/nonfavs-icon.png'
 
 function MealPage() {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const params = useParams();
 
-  const params = useParams(); // Use useParams hook here to access the id parameter
-  const { data, loading, error, fetchData } = useFetchData("", params.id);
-  console.log(data);
-  
-  if (!data) {
+  useEffect(() => {
+    const fetchFavoriteStatus = async () => {
+      try {
+        const db = getDatabase();
+        const favoriteMealRef = ref(db, `favoriteMeals/${params.id}`);
+        onValue(favoriteMealRef, (snapshot) => {
+          const data = snapshot.val();
+          setIsFavorite(data ? data.isFavorite : false);
+        });
+      } catch (error) {
+        console.error('Error fetching favorite status:', error);
+      }
+    };
+
+    fetchFavoriteStatus();
+
+    return () => {
+      // Cleanup function to unsubscribe from Firebase listener
+      const db = getDatabase();
+      const favoriteMealRef = ref(db, `favoriteMeals/${params.id}`);
+      onValue(favoriteMealRef, null);
+    };
+  }, [params.id]);
+
+  const handleToggleFavorite = () => {
+    // Toggle the favorite status
+    setIsFavorite(!isFavorite);
+
+    // Get a reference to the Firebase database
+    const db = getDatabase();
+
+    // Update the favorite status in the database
+    set(ref(db, `favoriteMeals/${params.id}`), {
+      ...meal,
+      isFavorite: !isFavorite, // Update the favorite status in the meal object
+    });
+  };
+
+  const { data, loading, error } = useFetchData('', params.id);
+
+  if (loading) {
     return <p>Loading...</p>; // Display a loading message while waiting for data
-}
-  const meal = data[0]
+  }
+
+  if (error || !data || !data.length) {
+    return <p>Error loading meal details.</p>; // Handle error case
+  }
+
+  const meal = data[0];
   const renderIngredients = () => {
     let ingredients = [];
     for (let i = 1; i <= 20; i++) {
       const ingredient = meal[`strIngredient${i}`];
       const measure = meal[`strMeasure${i}`];
       if (ingredient && measure) {
-        ingredients.push(
-          <li key={i}>{`${ingredient}: ${measure}`}</li>
-        );
+        ingredients.push(<li key={i}>{`${ingredient}: ${measure}`}</li>);
       }
     }
     return ingredients;
@@ -42,7 +86,12 @@ function MealPage() {
       </div>
       <div className='w-2/5 flex flex-col justify-center gap-16'>
         <div>
-          <h1 className='text-4xl'>{meal.strMeal}</h1>
+          <div className='flex mt-16 gap-4'>
+            <h1 className='text-4xl'>{meal.strMeal}</h1>
+            <button onClick={handleToggleFavorite}>
+                <img className='h-8' src={isFavorite ? favsIcon : nonFavsIcon} alt={isFavorite ? 'Favorite' : 'Not Favorite'} />
+            </button>
+          </div>
           <h2 className='text-lg font-semibold italic'>{meal.strCategory}</h2>
         </div>
         <div className='w-4/5'>
