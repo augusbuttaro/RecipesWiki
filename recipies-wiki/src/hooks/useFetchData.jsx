@@ -30,7 +30,6 @@ function useFetchData(searchQuery = '', id = '') {
         useEffect(() => {
             fetchData();
         }, [searchQuery, id]);
-        console.log(data)
     return {data, loading, error, fetchData }
 }
 export default useFetchData
