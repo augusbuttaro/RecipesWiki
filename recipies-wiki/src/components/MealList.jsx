@@ -3,7 +3,7 @@ import Card from './Card';
 
 function MealList({ data }) {
   if (!data) {
-    return null; // or return loading indicator, error message, or empty state
+    return <div className='w-fit mx-auto my-24 px-8 py-4 bg-red text-white text-3xl'>No meals found. Start searching above!</div>; // or return loading indicator, error message, or empty state
   }
 
   return (

@@ -15,6 +15,7 @@ function Header({ onSearch }) {
         };
         const handleSubmit = (e) => {
             e.preventDefault();
+            setSearchQuery('');
           };
   return (
     <div className='bg-blue flex justify-between '>
@@ -30,10 +31,6 @@ function Header({ onSearch }) {
             <button type='submit' className='bg-gray w-10 h-10'>O</button>
         </form>
         <div className='flex px-8'>
-            <div className='flex items-center gap-4 px-4 cursor-pointer text-white hover:bg-orange'>
-                <img className='h-12' src={randomIcon} />
-                Get a Random Meal
-            </div>
             <div className='flex items-center gap-4 px-4 cursor-pointer text-white hover:bg-orange'>
                 <img className='h-12' src={favsIcon} />
                 Favourite Recipies
